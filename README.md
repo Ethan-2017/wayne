@@ -3,6 +3,7 @@
 [![Build Statue](https://travis-ci.org/Qihoo360/wayne.svg?branch=master)](https://travis-ci.org/Qihoo360/wayne)
 [![Build Tag](https://img.shields.io/github/tag/Qihoo360/wayne.svg)](https://github.com/Qihoo360/wayne/releases)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/Qihoo360/wayne/blob/master/LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Qihoo360/wayne)](https://goreportcard.com/report/github.com/Qihoo360/wayne)
 
 [English](https://github.com/Qihoo360/wayne/blob/master/README.md) | [中文](https://github.com/Qihoo360/wayne/blob/master/README-CN.md)
 
@@ -49,10 +50,10 @@ The whole system adopts the separation of front and back ends, in which the fron
 
 ## Quickly Start
 
-- Create configuration file
+- Clone
 
 ```bash
-$ cd /tmp && touch dev.conf
+$ go get github.com/Qihoo360/wayne
 ```
 
 - Start MySQL(Optional)
@@ -60,24 +61,38 @@ $ cd /tmp && touch dev.conf
 If you don't have a MySQL service available, you can quickly create it with docker-compose:
 
 ```bash
-$ docker-compose up mysql
+$ docker-compose up -d mysql
+```
+
+- Create configuration file
+
+```bash
+$ cd src/backend/conf && touch dev.conf
 ```
 
 - Write database related configuration (Please modify to the actual address of the database.)
 
 ```bash
 DBName = wayne
-# MySQL address,if MySQL is started via docker-compose,
-# Cannot be accessed directly through 127.0.0.1 under Mac OS.Please change to actual IP.
-DBTns = tcp(127.0.0.1:3306)
+# MySQL connection config, its mysql(service name) by default.
+# Keep it default value, if you run MySQL via docker-compose and you didn't
+# change the mysql's service name.
+# You can also run "docker network inspect wayne_default"(replace wayne_default
+# to the real docker network name if you didn't use the default network of 
+# docker-compose) to get the contianer IP of mysql, then replace `mysql`
+# to the container IP. Its more flexible when you want to customize the environment
+# of wayne running. For example "DBTns = tcp(172.17.0.2:3306)"
+DBTns = tcp(mysql:3306)
 DBUser = root
 DBPasswd = root
 ```
 
-- Run start command
+- Start Wayne
+
+cd Wayne root directory and execute
 
 ```bash
-$ docker run --rm  -e GOPATH=/go -v /tmp/dev.conf:/opt/wayne/conf/dev.conf -p 8080:8080 360cloud/wayne /opt/wayne/backend apiserver
+$ docker-compose up -d wayne
 ```
 
 With the above command, you can access the local Wayne from http://127.0.0.1:8080/admin, the default administrator account admin:admin.
